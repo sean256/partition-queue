@@ -2,6 +2,6 @@ language: node_js
 node_js:
   - "6"
   - "node"
-script: npm run travis
+script: npm test
 after_success:
   - npm run coveralls
