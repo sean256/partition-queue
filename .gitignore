@@ -1,2 +1,4 @@
 node_modules
 .vscode
+.coveralls.yml
+coverage
