@@ -1,6 +1,6 @@
 # Partition Queue
 
-[![npm](http://img.shields.io/npm/v/partition-queue.svg?style=rounded)](http://www.npmjs.org/queue)
+[![npm](http://img.shields.io/npm/v/partition-queue.svg?style=rounded)](http://www.npmjs.org/partition-queue)
 [![Build Status](https://travis-ci.org/sean256/partition-queue.svg?branch=master)](https://travis-ci.org/sean256/partition-queue)
 [![Coverage Status](https://coveralls.io/repos/github/sean256/partition-queue/badge.svg?branch=feature%2Fpartition-queue)](https://coveralls.io/github/sean256/partition-queue?branch=feature%2Fpartition-queue)
 
