@@ -106,4 +106,4 @@ After all jobs have been processed.
 ## Releases
 
 - 1.x
- - Initial
+  - Initial
