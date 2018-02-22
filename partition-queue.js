@@ -12,10 +12,15 @@ class PartitionQueue extends EventEmitter {
 		this.hashingFunction = this.options.hashingFunction || dependencies.hashString;
 		this.remaining = 0;
 		this.queues = [...new Array(this.concurrency)].map(() => []);
-
 		this.startPromiseResolve = null;
 	}
 
+	/**
+	 * Add a job
+	 * @param {string} key The partition string to use. May be a non string when
+	 * using a custom hashing function
+	 * @param {function|promise} job A callback function, promise or async function.
+	 */
 	push(key, job) {
 		const {
 			concurrency,
@@ -32,6 +37,7 @@ class PartitionQueue extends EventEmitter {
 		}
 	}
 
+	/** Start the queue/s */
 	start() {
 		const { queues } = this;
 		return new Promise((resolve) => {
@@ -53,7 +59,7 @@ class PartitionQueue extends EventEmitter {
 			let timeout;
 			let doneCalled = false;
 			const done = (error, result) => {
-				if (error) { this.emit('error', error); }
+				if (error) { this.emit('error', error, job); }
 				if (timeout) { clearTimeout(timeout); }
 				if (doneCalled) return; // prevent a double call
 				doneCalled = true;
@@ -75,7 +81,7 @@ class PartitionQueue extends EventEmitter {
 				const promise = job(result => done(null, result), error => done(error));
 				if (promise) {
 					promise.then((result) => {
-						done(null, result, job);
+						done(null, result);
 					}).catch((error) => {
 						done(error || new Error('Unknown Error when processing Job'));
 					});
