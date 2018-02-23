@@ -81,12 +81,14 @@ class PartitionQueue extends EventEmitter {
 			} catch (error) {
 				done(error);
 			}
-		} else if (this.remaining === 0) {
-			this.emit('done');
+		} else {
 			queue.running = false;
-			if (this.startPromiseResolve) {
-				this.startPromiseResolve();
-				this.startPromiseResolve = null;
+			if (this.remaining === 0) {
+				this.emit('done');
+				if (this.startPromiseResolve) {
+					this.startPromiseResolve();
+					this.startPromiseResolve = null;
+				}
 			}
 		}
 	}
