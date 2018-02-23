@@ -1,7 +1,7 @@
 {
   "name": "partition-queue",
   "version": "1.0.1",
-  "description": "Asynchronous function queue with adjustable concurrency and the ability to partition tasks by a key.",
+  "description": "A dead simple partitioned asynchronous queue with adjustable concurrency. Jobs with the same key are guaranteed to be processed in order.",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
