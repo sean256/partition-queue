@@ -53,8 +53,8 @@ class PartitionQueue extends EventEmitter {
 	next(queueNumber) {
 		const { queues, timeout: timeoutMs } = this;
 		const queue = queues[queueNumber];
-		queue.running = true;
 		const job = queue.shift();
+		queue.running = true;
 		if (job) {
 			let timeout;
 			let doneCalled = false;
@@ -65,14 +65,6 @@ class PartitionQueue extends EventEmitter {
 				doneCalled = true;
 				this.remaining -= 1;
 				this.emit('success', result, job);
-				if (!this.remaining) {
-					this.emit('done');
-					queue.running = false;
-					if (this.startPromiseResolve) {
-						this.startPromiseResolve();
-						this.startPromiseResolve = null;
-					}
-				}
 				this.next(queueNumber);
 			};
 			timeout = timeoutMs ? (setTimeout(() => { this.emit('timeout'); done(new Error('Time Out')); }, timeoutMs)) : null;
@@ -88,6 +80,13 @@ class PartitionQueue extends EventEmitter {
 				}
 			} catch (error) {
 				done(error);
+			}
+		} else if (this.remaining === 0) {
+			this.emit('done');
+			queue.running = false;
+			if (this.startPromiseResolve) {
+				this.startPromiseResolve();
+				this.startPromiseResolve = null;
 			}
 		}
 	}
