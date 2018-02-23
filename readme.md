@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/sean256/partition-queue.svg?branch=master)](https://travis-ci.org/sean256/partition-queue)
 [![Coverage Status](https://coveralls.io/repos/github/sean256/partition-queue/badge.svg?branch=feature%2Fpartition-queue)](https://coveralls.io/github/sean256/partition-queue?branch=feature%2Fpartition-queue)
 
-A Partitioned asynchronous function queue with adjustable concurrency. Jobs with the same key are guaranteed to be processed in order.
+A dead simple partitioned asynchronous queue with adjustable concurrency. Jobs with the same key are guaranteed to be processed in order.
 
 
 ## Install

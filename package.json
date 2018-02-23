@@ -1,11 +1,12 @@
 {
   "name": "partition-queue",
-  "version": "1.0.0",
-  "description": "Asynchronous function queue with adjustable concurrency and the ability to partition tasks by a key.",
+  "version": "1.0.1",
+  "description": "A dead simple partitioned asynchronous queue with adjustable concurrency. Jobs with the same key are guaranteed to be processed in order.",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
     "cover": "istanbul cover _mocha",
+    "debug": "mocha --inspect-brk=0.0.0.0:9004",
     "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {

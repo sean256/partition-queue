@@ -240,7 +240,7 @@ describe('PartitionQueue', () => {
 	it('Prevent double start', (done) => {
 		const q = new PartitionQueue();
 		const key = 'some key';
-		const job = (jobDone) => { jobDone(); };
+		const job = (jobDone) => { setImmediate(jobDone); };
 		q.on('done', () => {
 			done();
 		});
@@ -255,5 +255,91 @@ describe('PartitionQueue', () => {
 		const job = (jobDone) => { setImmediate(jobDone); };
 		q.push(key, job);
 		q.start().then(done);
+	});
+
+	it('Adds instantly resolving jobs', (done) => {
+		const q = new PartitionQueue();
+		const key = 'some key';
+		const jobCount = 3;
+
+		q.on('done', () => {
+			done();
+		});
+
+		for (let i = 0; i < jobCount; i += 1) {
+			const job = (jobDone) => {
+				jobDone();
+			};
+			q.push(key, job);
+		}
+
+		q.start();
+	});
+
+	it('Adds instantly resolving jobs and drains with autostart', (done) => {
+		const q = new PartitionQueue({ autostart: true });
+		const key = 'some key';
+		const jobCount = 3;
+		let completeCount = 0;
+
+		// using success instead of done since instantly resolving jobs will call
+		// on('done) immediately before the next is added when using autostart
+		q.on('success', () => {
+			completeCount += 1;
+			if (completeCount === jobCount) {
+				done();
+			}
+		});
+
+		for (let i = 0; i < jobCount; i += 1) {
+			const job = (jobDone) => {
+				jobDone();
+			};
+			q.push(key, job);
+		}
+	});
+
+	it('Adds instantly resolving jobs to multiple queues with autostart', (done) => {
+		const q = new PartitionQueue({ autostart: true, concurrency: 10 });
+		const jobCount = 100;
+		let completeCount = 0;
+
+		// using success instead of done since instantly resolving jobs will call
+		// on('done) immediately before the next is added when using autostart
+		q.on('success', () => {
+			completeCount += 1;
+			if (completeCount === jobCount) {
+				done();
+			}
+		});
+
+		for (let i = 0; i < jobCount; i += 1) {
+			const key = `key-${i}`;
+			const job = (jobDone) => {
+				jobDone();
+			};
+			q.push(key, job);
+		}
+	});
+
+	it('Adds instantly resolving promise jobs to multiple queues with autostart', (done) => {
+		const q = new PartitionQueue({ autostart: true, concurrency: 10 });
+		const jobCount = 100;
+		let completeCount = 0;
+
+		// using success instead of done since instantly resolving jobs will call
+		// on('done) immediately before the next is added when using autostart
+		q.on('success', () => {
+			completeCount += 1;
+			if (completeCount === jobCount) {
+				done();
+			}
+		});
+
+		for (let i = 0; i < jobCount; i += 1) {
+			const key = `key-${i}`;
+			const job = () => new Promise((resolve) => { resolve(); });
+			q.push(key, job);
+		}
 	});
 });
