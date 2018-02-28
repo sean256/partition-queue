@@ -342,4 +342,53 @@ describe('PartitionQueue', () => {
 			q.push(key, job);
 		}
 	});
+
+	it('Adds instantly resolving promise jobs to multiple queues with autostart', (done) => {
+		const q = new PartitionQueue({ autostart: true, concurrency: 5 });
+		const jobCount = 100;
+		let remaining = jobCount;
+		let completeCount = 0;
+		q.on('success', () => {
+			completeCount += 1;
+			if (completeCount === jobCount) {
+				done();
+			}
+		});
+
+		const doNext = () => {
+			if (remaining > 0) {
+				for (let i = 0; i < 5; i += 1) {
+					const key = `key-${remaining}`;
+					remaining -= 1;
+					q.push(key, async () => true);
+				}
+				setImmediate(doNext);
+			}
+		};
+		doNext();
+	});
+
+	it('Does not call success after an error', (done) => {
+		const q = new PartitionQueue({ autostart: true });
+		const key = 'some key';
+		const e = new Error('Uh Oh');
+		let successCalled = false;
+		const job = () => new Promise((resolve, reject) => {
+			reject(e);
+		});
+
+		q.on('error', (error) => {
+			assert.equal(error, e);
+			setImmediate(() => {
+				assert.equal(successCalled, false);
+				done();
+			});
+		});
+
+		q.on('success', () => {
+			successCalled = true;
+		});
+
+		q.push(key, job);
+	});
 });
