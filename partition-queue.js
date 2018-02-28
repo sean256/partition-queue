@@ -64,7 +64,9 @@ class PartitionQueue extends EventEmitter {
 				if (doneCalled) return; // prevent a double call
 				doneCalled = true;
 				this.remaining -= 1;
-				this.emit('success', result, job);
+				if (!error) {
+					this.emit('success', result, job);
+				}
 				this.next(queueNumber);
 			};
 			timeout = timeoutMs ? (setTimeout(() => { this.emit('timeout'); done(new Error('Time Out')); }, timeoutMs)) : null;
