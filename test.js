@@ -360,7 +360,8 @@ describe('PartitionQueue', () => {
 				for (let i = 0; i < 5; i += 1) {
 					const key = `key-${remaining}`;
 					remaining -= 1;
-					q.push(key, async () => true);
+					const job = () => new Promise((resolve) => { resolve(); });
+					q.push(key, job);
 				}
 				setImmediate(doNext);
 			}
