@@ -396,7 +396,7 @@ describe('PartitionQueue', () => {
 	it('Empty queue with concurrency > 1 does not emit done more than once', (done) => {
 		const q = new PartitionQueue({ concurrency: 5 });
 		let doneCalls = 0;
-		q.on('done', async () => {
+		q.on('done', () => {
 			doneCalls += 1;
 			setImmediate(() => {
 				assert.equal(doneCalls, 1);
