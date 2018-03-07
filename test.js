@@ -206,7 +206,12 @@ describe('PartitionQueue', () => {
 		const q = new PartitionQueue({ autostart: true, timeout: 50 });
 		const key = 'some key';
 		const job = () => {};
+		let timeoutCalled = false;
 		q.on('timeout', () => {
+			timeoutCalled = true;
+		});
+		q.on('error', () => {
+			assert.equal(timeoutCalled, true);
 			done();
 		});
 		q.push(key, job);
@@ -220,6 +225,9 @@ describe('PartitionQueue', () => {
 		};
 		q.on('timeout', () => {
 			done();
+		});
+		q.on('error', () => {
+			// to prevent an uncaught error
 		});
 		q.push(key, job);
 	});
@@ -391,5 +399,20 @@ describe('PartitionQueue', () => {
 		});
 
 		q.push(key, job);
+	});
+
+	it('Empty queue with concurrency > 1 does not emit done more than once', (done) => {
+		const q = new PartitionQueue({ concurrency: 5 });
+		let doneCalls = 0;
+		q.on('done', () => {
+			doneCalls += 1;
+			setImmediate(() => {
+				assert.equal(doneCalls, 1);
+				done();
+			});
+		});
+		setImmediate(() => {
+			q.start();
+		});
 	});
 });
