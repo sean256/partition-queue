@@ -1,6 +1,6 @@
 {
   "name": "partition-queue",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A dead simple partitioned asynchronous queue with adjustable concurrency. Jobs with the same key are guaranteed to be processed in order.",
   "main": "index.js",
   "scripts": {
