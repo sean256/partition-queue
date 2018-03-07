@@ -206,7 +206,12 @@ describe('PartitionQueue', () => {
 		const q = new PartitionQueue({ autostart: true, timeout: 50 });
 		const key = 'some key';
 		const job = () => {};
+		let timeoutCalled = false;
 		q.on('timeout', () => {
+			timeoutCalled = true;
+		});
+		q.on('error', () => {
+			assert.equal(timeoutCalled, true);
 			done();
 		});
 		q.push(key, job);
@@ -220,6 +225,9 @@ describe('PartitionQueue', () => {
 		};
 		q.on('timeout', () => {
 			done();
+		});
+		q.on('error', () => {
+			// to prevent an uncaught error
 		});
 		q.push(key, job);
 	});
