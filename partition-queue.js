@@ -15,6 +15,14 @@ class PartitionQueue extends EventEmitter {
 		this.startPromiseResolve = null;
 	}
 
+	done() {
+		this.emit('done');
+		if (this.startPromiseResolve) {
+			this.startPromiseResolve();
+			this.startPromiseResolve = null;
+		}
+	}
+
 	/**
 	 * Add a job
 	 * @param {string} key The partition string to use. May be a non string when
@@ -42,6 +50,11 @@ class PartitionQueue extends EventEmitter {
 		const { queues } = this;
 		return new Promise((resolve) => {
 			this.startPromiseResolve = resolve;
+			if (!this.remaining) {
+				// empty queue
+				this.done();
+				return;
+			}
 			queues.forEach((queue, queueNumber) => {
 				if (!queue.running) {
 					this.next(queueNumber);
@@ -54,8 +67,8 @@ class PartitionQueue extends EventEmitter {
 		const { queues, timeout: timeoutMs } = this;
 		const queue = queues[queueNumber];
 		const job = queue.shift();
-		queue.running = true;
 		if (job) {
+			queue.running = true;
 			let timeout;
 			let doneCalled = false;
 			const done = (error, result) => {
@@ -84,14 +97,10 @@ class PartitionQueue extends EventEmitter {
 				done(error);
 			}
 		} else {
-			queue.running = false;
-			if (this.remaining === 0) {
-				this.emit('done');
-				if (this.startPromiseResolve) {
-					this.startPromiseResolve();
-					this.startPromiseResolve = null;
-				}
+			if (queue.running && this.remaining === 0) {
+				this.done();
 			}
+			queue.running = false;
 		}
 	}
 }
