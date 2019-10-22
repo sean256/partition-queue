@@ -18,7 +18,7 @@ A dead simple partitioned asynchronous queue with adjustable concurrency. Jobs w
 ## Examples
 
 ```js
-const PartitionQueue = require('./partition-queue');
+const PartitionQueue = require('partition-queue');
 
 const q = new PartitionQueue();
 // add a job using a key then call done when the job is complete
